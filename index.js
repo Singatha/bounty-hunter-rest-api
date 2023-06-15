@@ -5,10 +5,10 @@ const bodyParser = require('body-parser');
 
 // Create a MySQL connection pool
 const pool = mysql.createPool({
-  host: 'your-database-host',
-  user: 'your-database-username',
-  password: 'your-database-password',
-  database: 'your-database-name'
+  host: 'mysql-db',
+  user:'root',
+  password: 'password',
+  database: 'bountyhunterDB'
 });
 
 // Create the Bounties table
