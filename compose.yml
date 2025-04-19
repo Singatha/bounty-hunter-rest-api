@@ -1,0 +1,57 @@
+version: '2.1'
+services:
+  mysql-db:
+    image: mysql:latest
+    container_name: bounty-hunter-mysql
+    restart: always
+    ports:
+      - '3306:3306'
+    volumes:
+      - my-db-volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: bountyhunterDB
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 5s
+      timeout: 20s
+      retries: 10
+    networks:
+      - bounty-hunter-net
+  supertokens:
+    image: registry.supertokens.io/supertokens/supertokens-mysql
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    ports:
+      - 3567:3567
+    environment:
+      MYSQL_CONNECTION_URI: mysql://root:password@mysql-db:3306/bountyhunterDB
+    networks:
+      - bounty-hunter-net
+    restart: unless-stopped
+    healthcheck:
+      test: >
+        bash -c 'exec 3<>/dev/tcp/127.0.0.1/3567 && echo -e "GET /hello HTTP/1.1\r\nhost: 127.0.0.1:3567\r\nConnection: close\r\n\r\n" >&3 && cat <&3 | grep "Hello"'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  backend:
+    image: backend
+    container_name: bounty-hunter-server
+    build:
+      context: ./bounty-hunter-backend
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    networks:
+      - bounty-hunter-net
+
+networks:
+  bounty-hunter-net:
+
+volumes:
+  my-db-volume:

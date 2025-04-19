@@ -41,6 +41,8 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+bounty-hunter-frontend/node_modules
+bounty-hunter-backend/node_modules
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/

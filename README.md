@@ -2,7 +2,6 @@
 
 A bounty hunter REST API for listing, adding and assigning bounties.
 
-
 ## Run Locally
 
 Clone the project
